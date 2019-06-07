@@ -14,9 +14,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
-: G4VUserPrimaryGeneratorAction(),
-  fParticleGun(0), 
-  fEnvelopeBox(0)
+: G4VUserPrimaryGeneratorAction(), fParticleGun(0), fEnvelopeBox(0)
 {
   G4int n_particle = 1;
   fParticleGun  = new G4ParticleGun(n_particle);
@@ -25,10 +23,10 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
   G4ParticleDefinition* particle
-    = particleTable->FindParticle(particleName="gamma");
+    = particleTable->FindParticle(particleName="mu+");
   fParticleGun->SetParticleDefinition(particle);
-  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticleEnergy(6.*MeV);
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,-1.,0.));
+  fParticleGun->SetParticleEnergy(60.*MeV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -49,19 +47,21 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
   
-  G4double envSizeXY = 0;
-  G4double envSizeZ = 0;
+  G4double worldSizeX = 0;
+  G4double worldSizeY = 0;
+  G4double worldSizeZ = 0;
 
   if (!fEnvelopeBox)
   {
     G4LogicalVolume* envLV
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("Envelope");
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("World");
     if ( envLV ) fEnvelopeBox = dynamic_cast<G4Box*>(envLV->GetSolid());
   }
 
   if ( fEnvelopeBox ) {
-    envSizeXY = fEnvelopeBox->GetXHalfLength()*2.;
-    envSizeZ = fEnvelopeBox->GetZHalfLength()*2.;
+    worldSizeX = fEnvelopeBox->GetXHalfLength()*2.;
+    worldSizeY = fEnvelopeBox->GetYHalfLength()*2.;
+    worldSizeZ = fEnvelopeBox->GetZHalfLength()*2.;
   }  
   else  {
     G4ExceptionDescription msg;
@@ -73,9 +73,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   }
 
   G4double size = 0.8; 
-  G4double x0 = size * envSizeXY * (G4UniformRand()-0.5);
-  G4double y0 = size * envSizeXY * (G4UniformRand()-0.5);
-  G4double z0 = -0.5 * envSizeZ;
+  G4double x0 = size * worldSizeX * (G4UniformRand()-0.5);
+  G4double z0 = size * worldSizeZ * (G4UniformRand()-0.5);
+  G4double y0 = 0.5 * worldSizeY;
   
   fParticleGun->SetParticlePosition(G4ThreeVector(x0,y0,z0));
 

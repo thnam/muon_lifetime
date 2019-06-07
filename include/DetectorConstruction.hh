@@ -17,11 +17,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction
     virtual ~DetectorConstruction();
 
     virtual G4VPhysicalVolume* Construct();
-    
-    G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
+    virtual void ConstructSDandField();
 
   protected:
-    G4LogicalVolume*  fScoringVolume;
+    void DefineMaterials();
+    G4bool  fCheckOverlaps;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

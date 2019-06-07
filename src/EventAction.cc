@@ -5,32 +5,37 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "G4SDManager.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4THitsMap.hh"
+#include "G4UnitsTable.hh"
+#include "G4SystemOfUnits.hh"
 
 EventAction::EventAction(RunAction* runAction)
-: G4UserEventAction(),
-  fRunAction(runAction),
-  fEdep(0.)
-{} 
+: G4UserEventAction(), fRunAction(runAction), fCollID_cryst(-1) {} 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+EventAction::~EventAction() {}
 
-EventAction::~EventAction()
-{}
+void EventAction::BeginOfEventAction(const G4Event*) {}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void EventAction::EndOfEventAction(const G4Event* evt) {   
+  G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
+  if(!HCE) return;
 
-void EventAction::BeginOfEventAction(const G4Event*)
-{    
-  fEdep = 0.;
-}
+  if (fCollID_cryst < 0) {
+    G4SDManager* SDMan = G4SDManager::GetSDMpointer();  
+    fCollID_cryst   = SDMan->GetCollectionID("scSD/edep");
+  }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  G4THitsMap<G4double>* evtMap = 
+                     (G4THitsMap<G4double>*)(HCE->GetHC(fCollID_cryst));
+  std::map<G4int,G4double*>::iterator itr;
+  for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++) {
+    G4int copyNb  = (itr->first);
+    G4double edep = *(itr->second);
+    G4cout << "\n  cryst" << copyNb << ": " << edep/keV << " keV ";
+  }  
 
-void EventAction::EndOfEventAction(const G4Event*)
-{   
-  // accumulate statistics in run action
-  fRunAction->AddEdep(fEdep);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

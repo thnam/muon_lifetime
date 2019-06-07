@@ -4,57 +4,64 @@
 #include "G4RunManager.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
-#include "G4Cons.hh"
-#include "G4Orb.hh"
-#include "G4Sphere.hh"
-#include "G4Trd.hh"
+#include "G4Tubs.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
+#include "G4RotationMatrix.hh"
+#include "G4Transform3D.hh"
+#include "G4SDManager.hh"
+#include "G4MultiFunctionalDetector.hh"
+#include "G4VPrimitiveScorer.hh"
+#include "G4PSEnergyDeposit.hh"
+#include "G4PSDoseDeposit.hh"
+#include "G4VisAttributes.hh"
+#include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction()
-: G4VUserDetectorConstruction(),
-  fScoringVolume(0)
-{ }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+: G4VUserDetectorConstruction(), fCheckOverlaps(true) {
+  DefineMaterials();
+}
 
 DetectorConstruction::~DetectorConstruction()
 { }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void DetectorConstruction::DefineMaterials(){
+  G4NistManager* man = G4NistManager::Instance();
+  
+  G4bool isotopes = false;
+  
+  G4Element*  O = man->FindOrBuildElement("O" , isotopes); 
+  G4Element* Si = man->FindOrBuildElement("Si", isotopes);
+  G4Element* Lu = man->FindOrBuildElement("Lu", isotopes);  
+  
+  G4Material* LSO = new G4Material("Lu2SiO5", 7.4*g/cm3, 3);
+  LSO->AddElement(Lu, 2);
+  LSO->AddElement(Si, 1);
+  LSO->AddElement(O , 5);  
+}
 
-G4VPhysicalVolume* DetectorConstruction::Construct()
-{  
-  // Get nist material manager
+G4VPhysicalVolume* DetectorConstruction::Construct() {  
   G4NistManager* nist = G4NistManager::Instance();
-  
-  // Envelope parameters
-  //
-  G4double env_sizeXY = 20*cm, env_sizeZ = 30*cm;
-  G4Material* env_mat = nist->FindOrBuildMaterial("G4_WATER");
-   
-  // Option to switch on/off checking of volumes overlaps
-  //
-  G4bool checkOverlaps = true;
+  G4Material* default_mat = nist->FindOrBuildMaterial("G4_AIR");
+  G4Material* cryst_mat   = nist->FindOrBuildMaterial("Lu2SiO5");
 
-  //     
-  // World
-  //
-  G4double world_sizeXY = 1.2*env_sizeXY;
-  G4double world_sizeZ  = 1.2*env_sizeZ;
-  G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR");
+  // World and crystals
+  G4double scSizeX = 2.5 * cm;
+  G4double scSizeY = 1.0 * cm;
+  G4double scSizeZ = 10. * cm;
+  G4double scGapY = 0.2 * cm;
+
+  G4double worldSizeX = 1.2 * scSizeX;
+  G4double worldSizeY = 20 * scSizeY;
+  G4double worldSizeZ  = 1.2 * scSizeZ;
   
-  G4Box* solidWorld =    
-    new G4Box("World",                       //its name
-       0.5*world_sizeXY, 0.5*world_sizeXY, 0.5*world_sizeZ);     //its size
-      
+  G4Box* solidWorld = 
+    new G4Box("World", 0.5*worldSizeX, 0.5*worldSizeY, 0.5*worldSizeZ);
   G4LogicalVolume* logicWorld =                         
-    new G4LogicalVolume(solidWorld,          //its solid
-                        world_mat,           //its material
-                        "World");            //its name
+    new G4LogicalVolume(solidWorld, default_mat, "World");
                                    
   G4VPhysicalVolume* physWorld = 
     new G4PVPlacement(0,                     //no rotation
@@ -64,91 +71,70 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       0,                     //its mother  volume
                       false,                 //no boolean operation
                       0,                     //copy number
-                      checkOverlaps);        //overlaps checking
+                      fCheckOverlaps);        //overlaps checking
                      
-  //     
-  // Envelope
-  //  
-  G4Box* solidEnv =    
-    new G4Box("Envelope",                    //its name
-        0.5*env_sizeXY, 0.5*env_sizeXY, 0.5*env_sizeZ); //its size
-      
-  G4LogicalVolume* logicEnv =                         
-    new G4LogicalVolume(solidEnv,            //its solid
-                        env_mat,             //its material
-                        "Envelope");         //its name
-               
+
+  G4Box* solidSc =    
+    new G4Box("Scintillator", 0.5*scSizeX, 0.5*scSizeY, 0.5*scSizeZ);
+  G4LogicalVolume* logicSc =                         
+    new G4LogicalVolume(solidSc, cryst_mat, "logicSc");
+
+  G4double scOffset = 0. * cm;
+  G4double copyNo = 0;
   new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(),         //at (0,0,0)
-                    logicEnv,                //its logical volume
-                    "Envelope",              //its name
+                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
+                    logicSc,                //its logical volume
+                    "scMid",              //its name
                     logicWorld,              //its mother  volume
                     false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);          //overlaps checking
+                    copyNo,                       //copy number
+                    fCheckOverlaps);          //overlaps checking
  
-  //     
-  // Shape 1
-  //  
-  G4Material* shape1_mat = nist->FindOrBuildMaterial("G4_A-150_TISSUE");
-  G4ThreeVector pos1 = G4ThreeVector(0, 2*cm, -7*cm);
-        
-  // Conical section shape       
-  G4double shape1_rmina =  0.*cm, shape1_rmaxa = 2.*cm;
-  G4double shape1_rminb =  0.*cm, shape1_rmaxb = 4.*cm;
-  G4double shape1_hz = 3.*cm;
-  G4double shape1_phimin = 0.*deg, shape1_phimax = 360.*deg;
-  G4Cons* solidShape1 =    
-    new G4Cons("Shape1", 
-    shape1_rmina, shape1_rmaxa, shape1_rminb, shape1_rmaxb, shape1_hz,
-    shape1_phimin, shape1_phimax);
-                      
-  G4LogicalVolume* logicShape1 =                         
-    new G4LogicalVolume(solidShape1,         //its solid
-                        shape1_mat,          //its material
-                        "Shape1");           //its name
-               
-  new G4PVPlacement(0,                       //no rotation
-                    pos1,                    //at position
-                    logicShape1,             //its logical volume
-                    "Shape1",                //its name
-                    logicEnv,                //its mother  volume
-                    false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);          //overlaps checking
 
-  //     
-  // Shape 2
-  //
-  G4Material* shape2_mat = nist->FindOrBuildMaterial("G4_BONE_COMPACT_ICRU");
-  G4ThreeVector pos2 = G4ThreeVector(0, -1*cm, 7*cm);
-
-  // Trapezoid shape       
-  G4double shape2_dxa = 12*cm, shape2_dxb = 12*cm;
-  G4double shape2_dya = 10*cm, shape2_dyb = 16*cm;
-  G4double shape2_dz  = 6*cm;      
-  G4Trd* solidShape2 =    
-    new G4Trd("Shape2",                      //its name
-              0.5*shape2_dxa, 0.5*shape2_dxb, 
-              0.5*shape2_dya, 0.5*shape2_dyb, 0.5*shape2_dz); //its size
-                
-  G4LogicalVolume* logicShape2 =                         
-    new G4LogicalVolume(solidShape2,         //its solid
-                        shape2_mat,          //its material
-                        "Shape2");           //its name
-               
+  scOffset = scGapY + 2 * scSizeY / 2;
+  copyNo += 1;
   new G4PVPlacement(0,                       //no rotation
-                    pos2,                    //at position
-                    logicShape2,             //its logical volume
-                    "Shape2",                //its name
-                    logicEnv,                //its mother  volume
+                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
+                    logicSc,                //its logical volume
+                    "scTop0",              //its name
+                    logicWorld,              //its mother  volume
                     false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);          //overlaps checking
-                
-  // Set Shape2 as scoring volume
-  //
-  fScoringVolume = logicShape2;
+                    copyNo,                       //copy number
+                    fCheckOverlaps);          //overlaps checking
+
+  scOffset = 2 * (scGapY + 2 * scSizeY / 2);
+  copyNo += 1;
+  new G4PVPlacement(0,                       //no rotation
+                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
+                    logicSc,                //its logical volume
+                    "scTop1",              //its name
+                    logicWorld,              //its mother  volume
+                    false,                   //no boolean operation
+                    copyNo,                       //copy number
+                    fCheckOverlaps);          //overlaps checking
+
+  scOffset = -1 * (scGapY + 2 * scSizeY / 2);
+  copyNo += 1;
+  new G4PVPlacement(0,                       //no rotation
+                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
+                    logicSc,                //its logical volume
+                    "scBot0",              //its name
+                    logicWorld,              //its mother  volume
+                    false,                   //no boolean operation
+                    copyNo,                       //copy number
+                    fCheckOverlaps);          //overlaps checking
+
+  scOffset = -2 * (scGapY + 2 * scSizeY / 2);
+  copyNo += 1;
+  new G4PVPlacement(0,                       //no rotation
+                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
+                    logicSc,                //its logical volume
+                    "scBot1",              //its name
+                    logicWorld,              //its mother  volume
+                    false,                   //no boolean operation
+                    copyNo,                       //copy number
+                    fCheckOverlaps);          //overlaps checking
+
 
   //
   //always return the physical World
@@ -156,4 +142,12 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   return physWorld;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+void DetectorConstruction::ConstructSDandField() {
+  G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+
+  G4MultiFunctionalDetector* cryst = new G4MultiFunctionalDetector("scSD");
+  G4SDManager::GetSDMpointer()->AddNewDetector(cryst);
+  G4VPrimitiveScorer* primitiv1 = new G4PSEnergyDeposit("edep");
+  cryst->RegisterPrimitive(primitiv1);
+  SetSensitiveDetector("logicSc",cryst);
+}
