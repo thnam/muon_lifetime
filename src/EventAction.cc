@@ -1,6 +1,7 @@
 
 #include "EventAction.hh"
 #include "RunAction.hh"
+#include "Analysis.hh"
 
 #include "G4Event.hh"
 #include "G4RunManager.hh"
@@ -27,15 +28,19 @@ void EventAction::EndOfEventAction(const G4Event* evt) {
     fCollID_cryst   = SDMan->GetCollectionID("scSD/edep");
   }
 
+  auto anaMan = G4AnalysisManager::Instance();
+
   G4THitsMap<G4double>* evtMap = 
                      (G4THitsMap<G4double>*)(HCE->GetHC(fCollID_cryst));
   std::map<G4int,G4double*>::iterator itr;
   for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++) {
     G4int copyNb  = (itr->first);
     G4double edep = *(itr->second);
-    G4cout << "\n  cryst" << copyNb << ": " << edep/keV << " keV ";
+    // G4cout << "\n  cryst" << copyNb << ": " << edep/keV << " keV ";
+    anaMan->FillNtupleDColumn(copyNb, edep/MeV);
   }  
 
+  anaMan->AddNtupleRow();  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
