@@ -1,4 +1,3 @@
-
 #include "DetectorConstruction.hh"
 
 #include "G4RunManager.hh"
