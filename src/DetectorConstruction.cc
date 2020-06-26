@@ -81,61 +81,20 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 
   G4double scOffset = 0. * cm;
   G4double copyNo = 0;
-  new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
-                    logicSc,                //its logical volume
-                    "scMid",              //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    copyNo,                       //copy number
-                    fCheckOverlaps);          //overlaps checking
- 
 
-  scOffset = scGapY + 2 * scSizeY / 2;
-  copyNo += 1;
-  new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
-                    logicSc,                //its logical volume
-                    "scTop0",              //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    copyNo,                       //copy number
-                    fCheckOverlaps);          //overlaps checking
-
-  scOffset = 2 * (scGapY + 2 * scSizeY / 2);
-  copyNo += 1;
-  new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
-                    logicSc,                //its logical volume
-                    "scTop1",              //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    copyNo,                       //copy number
-                    fCheckOverlaps);          //overlaps checking
-
-  scOffset = -1 * (scGapY + 2 * scSizeY / 2);
-  copyNo += 1;
-  new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
-                    logicSc,                //its logical volume
-                    "scBot0",              //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    copyNo,                       //copy number
-                    fCheckOverlaps);          //overlaps checking
-
-  scOffset = -2 * (scGapY + 2 * scSizeY / 2);
-  copyNo += 1;
-  new G4PVPlacement(0,                       //no rotation
-                    G4ThreeVector(0, scOffset, 0),         //at (0,0,0)
-                    logicSc,                //its logical volume
-                    "scBot1",              //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    copyNo,                       //copy number
-                    fCheckOverlaps);          //overlaps checking
-
-
+  // place 5 scintillators, copy #0 is at the bottom, copy #4 is on top
+  for (int i = -2; i <= 2; i++) {
+     scOffset = i * (scGapY + 2 * scSizeY / 2);
+     new G4PVPlacement(0,                       //no rotation
+           G4ThreeVector(0, scOffset, 0),         // at some offset
+           logicSc,                //its logical volume
+           "Scintillator",              //its name
+           logicWorld,              //its mother  volume
+           false,                   //no boolean operation
+           copyNo,                       //copy number
+           fCheckOverlaps);          //overlaps checking
+     copyNo ++;
+  }
   //
   //always return the physical World
   //
