@@ -101,7 +101,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
 }
 
 void DetectorConstruction::ConstructSDandField() {
-  G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+  G4SDManager::GetSDMpointer()->SetVerboseLevel(0);
 
   G4MultiFunctionalDetector* cryst = new G4MultiFunctionalDetector("scSD");
   G4SDManager::GetSDMpointer()->AddNewDetector(cryst);

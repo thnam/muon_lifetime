@@ -20,7 +20,7 @@ RunAction::RunAction() : G4UserRunAction() {
   // Create directories 
   // anaMan->SetHistoDirectoryName("histos");
   // anaMan->SetNtupleDirectoryName("ntuples");
-  anaMan->SetVerboseLevel(1);
+  anaMan->SetVerboseLevel(0);
   anaMan->SetNtupleMerging(true);
 
   anaMan->CreateNtuple("edep", "Energy deposit [MeV]");
