@@ -1,23 +1,22 @@
-
-#include "RunAction.hh"
 #include "Analysis.hh"
-#include "PrimaryGeneratorAction.hh"
 #include "DetectorConstruction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "RunAction.hh"
 // #include "Run.hh"
 
-#include "G4RunManager.hh"
-#include "G4Run.hh"
 #include "G4AccumulableManager.hh"
-#include "G4LogicalVolumeStore.hh"
 #include "G4LogicalVolume.hh"
-#include "G4UnitsTable.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4Run.hh"
+#include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4UnitsTable.hh"
 
-RunAction::RunAction() : G4UserRunAction() { 
+RunAction::RunAction() : G4UserRunAction() {
   auto anaMan = G4AnalysisManager::Instance();
   G4cout << "Using " << anaMan->GetType() << G4endl;
 
-  // Create directories 
+  // Create directories
   // anaMan->SetHistoDirectoryName("histos");
   // anaMan->SetNtupleDirectoryName("ntuples");
   anaMan->SetVerboseLevel(0);
@@ -32,12 +31,9 @@ RunAction::RunAction() : G4UserRunAction() {
   anaMan->FinishNtuple();
 }
 
-RunAction::~RunAction() {
-  delete G4AnalysisManager::Instance();  
-}
+RunAction::~RunAction() { delete G4AnalysisManager::Instance(); }
 
-void RunAction::BeginOfRunAction(const G4Run*)
-{ 
+void RunAction::BeginOfRunAction(const G4Run *) {
   // inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
@@ -48,12 +44,11 @@ void RunAction::BeginOfRunAction(const G4Run*)
   //
   G4String fileName = "edep";
   anaMan->OpenFile(fileName);
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void RunAction::EndOfRunAction(const G4Run* run) {
+void RunAction::EndOfRunAction(const G4Run *run) {
   auto anaMan = G4AnalysisManager::Instance();
   anaMan->Write();
   anaMan->CloseFile();
