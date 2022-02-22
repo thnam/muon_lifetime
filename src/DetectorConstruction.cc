@@ -31,21 +31,22 @@ void DetectorConstruction::DefineMaterials(){
   G4NistManager* man = G4NistManager::Instance();
   
   G4bool isotopes = false;
-  
-  G4Element*  O = man->FindOrBuildElement("O" , isotopes); 
+
+  G4Element*  O = man->FindOrBuildElement("O" , isotopes);
   G4Element* Si = man->FindOrBuildElement("Si", isotopes);
-  G4Element* Lu = man->FindOrBuildElement("Lu", isotopes);  
-  
+  G4Element* Lu = man->FindOrBuildElement("Lu", isotopes);
+
   G4Material* LSO = new G4Material("Lu2SiO5", 7.4*g/cm3, 3);
   LSO->AddElement(Lu, 2);
   LSO->AddElement(Si, 1);
-  LSO->AddElement(O , 5);  
+  LSO->AddElement(O , 5);
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct() {  
   G4NistManager* nist = G4NistManager::Instance();
   G4Material* default_mat = nist->FindOrBuildMaterial("G4_AIR");
   G4Material* cryst_mat   = nist->FindOrBuildMaterial("Lu2SiO5");
+  G4Material* target_mat   = nist->FindOrBuildMaterial("G4_Cu");
 
   // World and crystals
   G4double scSizeX = 2.5 * cm;
@@ -78,21 +79,38 @@ G4VPhysicalVolume* DetectorConstruction::Construct() {
   G4LogicalVolume* logicSc =                         
     new G4LogicalVolume(solidSc, cryst_mat, "logicSc");
 
+  G4Box* solidTarget =    
+    new G4Box("Target", 0.5*scSizeX, 0.5*scSizeY, 0.5*scSizeZ);
+  G4LogicalVolume* logicTarget =                         
+    new G4LogicalVolume(solidTarget, target_mat, "logicTarget");
+
   G4double scOffset = 0. * cm;
   G4double copyNo = 0;
 
   // place 5 scintillators, copy #0 is at the bottom, copy #4 is on top
   for (int i = -2; i <= 2; i++) {
      scOffset = i * (scGapY + 2 * scSizeY / 2);
-     new G4PVPlacement(0,                       //no rotation
-           G4ThreeVector(0, scOffset, 0),         // at some offset
-           logicSc,                //its logical volume
-           "Scintillator",              //its name
-           logicWorld,              //its mother  volume
-           false,                   //no boolean operation
-           copyNo,                       //copy number
-           fCheckOverlaps);          //overlaps checking
-     copyNo ++;
+     if (i != 0) {
+        new G4PVPlacement(0,                       //no rotation
+              G4ThreeVector(0, scOffset, 0),         // at some offset
+              logicSc,                //its logical volume
+              "Scintillator",              //its name
+              logicWorld,              //its mother  volume
+              false,                   //no boolean operation
+              copyNo,                       //copy number
+              fCheckOverlaps);          //overlaps checking
+        copyNo ++;
+     }
+     else {
+        new G4PVPlacement(0,                       //no rotation
+              G4ThreeVector(0, scOffset, 0),         // at some offset
+              logicTarget,                //its logical volume
+              "Target",              //its name
+              logicWorld,              //its mother  volume
+              false,                   //no boolean operation
+              0,                       //copy number
+              fCheckOverlaps);          //overlaps checking
+     }
   }
   //
   //always return the physical World
