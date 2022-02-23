@@ -23,11 +23,9 @@ RunAction::RunAction() : G4UserRunAction() {
   anaMan->SetNtupleMerging(true);
 
   anaMan->CreateNtuple("edep", "Energy deposit [MeV]");
+  anaMan->CreateNtupleDColumn("scTop");
   anaMan->CreateNtupleDColumn("scMid");
-  anaMan->CreateNtupleDColumn("scTop0");
-  anaMan->CreateNtupleDColumn("scTop1");
-  anaMan->CreateNtupleDColumn("scBot0");
-  anaMan->CreateNtupleDColumn("scBot1");
+  anaMan->CreateNtupleDColumn("scBot");
   anaMan->FinishNtuple();
 }
 
