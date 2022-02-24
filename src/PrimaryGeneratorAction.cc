@@ -28,7 +28,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(const char *inputfile)
       G4cout << "PrimaryGeneratorAction: Failed to open CRY input file= "
              << inputfile << G4endl;
     InputState = -1;
-  } else {
+  } 
+  else {
     std::string setupString("");
     while (!inputFile.getline(buffer, 1000).eof()) {
       setupString.append(buffer);
@@ -62,6 +63,12 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction() { delete fParticleGun; }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
+  if (!fEnvelopeBox) {
+    G4LogicalVolume *envLV =
+        G4LogicalVolumeStore::GetInstance()->GetVolume("World");
+    if (envLV) fEnvelopeBox = dynamic_cast<G4Box *>(envLV->GetSolid());
+  }
+
   if (InputState != 0) {
     G4String *str =
       new G4String("CRY library was not successfully initialized");
@@ -93,10 +100,16 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     fParticleGun->SetParticleDefinition(
       particleTable->FindParticle((*vect)[j]->PDGid()));
     fParticleGun->SetParticleEnergy((*vect)[j]->ke() * MeV);
+
+    // Need to rotate the particle direction since in CRY z is up and 
+    // in this simulation y is up
     fParticleGun->SetParticlePosition(G4ThreeVector(
-      (*vect)[j]->x() * m, (*vect)[j]->y() * m, (*vect)[j]->z() * m));
+      (*vect)[j]->y() * m,
+      (*vect)[j]->z() * m + fEnvelopeBox->GetYHalfLength(),
+      (*vect)[j]->x() * m));
     fParticleGun->SetParticleMomentumDirection(
-      G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w()));
+      G4ThreeVector((*vect)[j]->v(), (*vect)[j]->w(), (*vect)[j]->u()));
+
     fParticleGun->SetParticleTime((*vect)[j]->t());
     fParticleGun->GeneratePrimaryVertex(anEvent);
     delete (*vect)[j];

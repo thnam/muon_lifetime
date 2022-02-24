@@ -4,10 +4,22 @@
 /run/verbose 2
 #
 # Change the default number of threads (in multi-threaded mode)
-#/run/numberOfThreads 4
+/run/numberOfThreads 1
 #
 # Initialize kernel
 /run/initialize
 #
 # Visualization setting
 /control/execute vis.mac
+
+
+/CRY/input returnNeutrons 1
+/CRY/input returnProtons 1
+/CRY/input returnGammas 1
+/CRY/input returnPions 1
+/CRY/input returnKaons 1
+/CRY/input date 7-1-2012
+/CRY/input latitude 13.77648	
+/CRY/input altitude 0
+/CRY/input subboxLength 0.2
+/CRY/update
