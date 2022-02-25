@@ -80,22 +80,22 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   gen->genEvent(vect);
 
   //....debug output
-  G4cout << "\nEvent=" << anEvent->GetEventID() << " "
-         << "CRY generated nparticles=" << vect->size() << G4endl;
+  // G4cout << "\nEvent=" << anEvent->GetEventID() << " "
+         // << "CRY generated nparticles=" << vect->size() << G4endl;
 
   for (unsigned j = 0; j < vect->size(); j++) {
     particleName = CRYUtils::partName((*vect)[j]->id());
 
     //....debug output
-    G4cout << "  " << particleName << " "
-           << "charge=" << (*vect)[j]->charge() << " "
-           << "energy (MeV)=" << (*vect)[j]->ke() * MeV << " "
-           << "pos (m)"
-           << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
-           << " "
-           << "direction cosines "
-           << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w())
-           << " " << G4endl;
+    // G4cout << "  " << particleName << " "
+           // << "charge=" << (*vect)[j]->charge() << " "
+           // << "energy (MeV)=" << (*vect)[j]->ke() * MeV << " "
+           // << "pos (m)"
+           // << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
+           // << " "
+           // << "direction cosines "
+           // << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w())
+           // << " " << G4endl;
 
     fParticleGun->SetParticleDefinition(
       particleTable->FindParticle((*vect)[j]->PDGid()));
