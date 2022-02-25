@@ -10,16 +10,17 @@
 /run/initialize
 #
 # Visualization setting
-/control/execute vis.mac
 
-
-/CRY/input returnNeutrons 0
-/CRY/input returnProtons 0
-/CRY/input returnGammas 0
-/CRY/input returnPions 0
-/CRY/input returnKaons 0
-/CRY/input date 3-1-2022
+/CRY/input returnNeutrons 1
+/CRY/input returnProtons 1
+/CRY/input returnGammas 1
+/CRY/input returnPions 1
+/CRY/input returnKaons 1
+/CRY/input date 7-1-2012
 /CRY/input latitude 13.77648	
 /CRY/input altitude 0
 /CRY/input subboxLength 0.2
 /CRY/update
+
+/tracking/verbose 1
+/run/beamOn 10000
