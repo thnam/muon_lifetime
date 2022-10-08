@@ -42,9 +42,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
   G4double scSizeZ = 17. * cm;
   G4double scGapY = 0.2 * cm;
 
-  G4double worldSizeX = 1.2 * scSizeX;
-  G4double worldSizeY = 20 * scSizeY;
-  G4double worldSizeZ = 1.2 * scSizeZ;
+  G4double worldSizeX = 5 * scSizeX;
+  G4double worldSizeY = 5 * scSizeY;
+  G4double worldSizeZ = 5 * scSizeZ;
 
   G4Box *solidWorld =
     new G4Box("World", 0.5 * worldSizeX, 0.5 * worldSizeY, 0.5 * worldSizeZ);
