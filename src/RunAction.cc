@@ -23,9 +23,10 @@ RunAction::RunAction() : G4UserRunAction() {
   anaMan->SetNtupleMerging(true);
 
   anaMan->CreateNtuple("edep", "Energy deposit [MeV]");
-  anaMan->CreateNtupleDColumn("scBot");
-  anaMan->CreateNtupleDColumn("scMid");
-  anaMan->CreateNtupleDColumn("scTop");
+  anaMan->CreateNtupleDColumn("sc0");
+  anaMan->CreateNtupleDColumn("sc1");
+  anaMan->CreateNtupleDColumn("sc2");
+  anaMan->CreateNtupleDColumn("sc3");
   anaMan->FinishNtuple();
 }
 
@@ -40,7 +41,7 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 
   // Open an output file
   //
-  G4String fileName = "edep";
+  G4String fileName = "edep.root";
   anaMan->OpenFile(fileName);
 }
 

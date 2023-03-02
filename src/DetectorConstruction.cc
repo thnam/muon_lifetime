@@ -42,9 +42,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
   G4double scSizeZ = 17. * cm;
   G4double scGapY = 0.2 * cm;
 
-  G4double worldSizeX = 5 * scSizeX;
-  G4double worldSizeY = 5 * scSizeY;
-  G4double worldSizeZ = 5 * scSizeZ;
+  G4double worldSizeX = 10 * scSizeX;
+  G4double worldSizeY = 10 * scSizeY;
+  G4double worldSizeZ = 10 * scSizeZ;
 
   G4Box *solidWorld =
     new G4Box("World", 0.5 * worldSizeX, 0.5 * worldSizeY, 0.5 * worldSizeZ);
@@ -68,8 +68,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
   G4double scOffset = 0. * cm;
   G4double copyNo = 0;
 
-  // place 3 scintillators, copy #0 is at the bottom, copy #2 is on top
-  for (int i = -1; i <= 1; i++) {
+  // place 4 scintillators, copy #0 is at the bottom, copy #3 is on top
+  for (int i = -1; i <= 2; i++) {
     scOffset = i * (scGapY + 2 * scSizeY / 2);
     new G4PVPlacement(0,                             // no rotation
                       G4ThreeVector(0, scOffset, 0), // at some offset
