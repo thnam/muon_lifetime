@@ -38,6 +38,7 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 
   // Get analysis manager
   auto anaMan = G4AnalysisManager::Instance();
+  anaMan->Reset();
 
   // Open an output file
   //
@@ -50,5 +51,5 @@ void RunAction::BeginOfRunAction(const G4Run *) {
 void RunAction::EndOfRunAction(const G4Run *run) {
   auto anaMan = G4AnalysisManager::Instance();
   anaMan->Write();
-  anaMan->CloseFile();
+  anaMan->CloseFile(false);
 }
