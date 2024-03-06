@@ -12,7 +12,7 @@
 #include "G4UnitsTable.hh"
 
 EventAction::EventAction(RunAction *runAction)
-  : G4UserEventAction(), fRunAction(runAction), fCollID_cryst(-1) {}
+    : G4UserEventAction(), fRunAction(runAction), fCollID_cryst(-1) {}
 
 EventAction::~EventAction() {}
 
@@ -31,7 +31,7 @@ void EventAction::EndOfEventAction(const G4Event *evt) {
   auto anaMan = G4AnalysisManager::Instance();
 
   G4THitsMap<G4double> *evtMap =
-    (G4THitsMap<G4double> *)(HCE->GetHC(fCollID_cryst));
+      (G4THitsMap<G4double> *)(HCE->GetHC(fCollID_cryst));
   std::map<G4int, G4double *>::iterator itr;
   for (itr = evtMap->GetMap()->begin(); itr != evtMap->GetMap()->end(); itr++) {
     G4int copyNb = (itr->first);

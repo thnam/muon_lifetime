@@ -20,7 +20,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction()
-  : G4VUserDetectorConstruction(), fCheckOverlaps(true) {
+    : G4VUserDetectorConstruction(), fCheckOverlaps(true) {
   DefineMaterials();
 }
 
@@ -34,7 +34,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
   // G4Material *cryst_mat = nist->FindOrBuildMaterial("Lu2SiO5");
   // G4Material *target_mat = nist->FindOrBuildMaterial("G4_Cu");
   G4Material *plastic_sc_mat =
-    nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
+      nist->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
   // World and crystals
   G4double scSizeX = 5 * cm;
@@ -47,23 +47,23 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
   G4double worldSizeZ = 10 * scSizeZ;
 
   G4Box *solidWorld =
-    new G4Box("World", 0.5 * worldSizeX, 0.5 * worldSizeY, 0.5 * worldSizeZ);
+      new G4Box("World", 0.5 * worldSizeX, 0.5 * worldSizeY, 0.5 * worldSizeZ);
   G4LogicalVolume *logicWorld =
-    new G4LogicalVolume(solidWorld, default_mat, "World");
+      new G4LogicalVolume(solidWorld, default_mat, "World");
   G4VPhysicalVolume *physWorld =
-    new G4PVPlacement(0,               // no rotation
-                      G4ThreeVector(), // at (0,0,0)
-                      logicWorld,      // its logical volume
-                      "World",         // its name
-                      0,               // its mother  volume
-                      false,           // no boolean operation
-                      0,               // copy number
-                      fCheckOverlaps); // overlaps checking
+      new G4PVPlacement(0,               // no rotation
+                        G4ThreeVector(), // at (0,0,0)
+                        logicWorld,      // its logical volume
+                        "World",         // its name
+                        0,               // its mother  volume
+                        false,           // no boolean operation
+                        0,               // copy number
+                        fCheckOverlaps); // overlaps checking
 
   G4Box *solidSc =
-    new G4Box("Scintillator", 0.5 * scSizeX, 0.5 * scSizeY, 0.5 * scSizeZ);
+      new G4Box("Scintillator", 0.5 * scSizeX, 0.5 * scSizeY, 0.5 * scSizeZ);
   G4LogicalVolume *logicSc =
-    new G4LogicalVolume(solidSc, plastic_sc_mat, "logicSc");
+      new G4LogicalVolume(solidSc, plastic_sc_mat, "logicSc");
 
   G4double scOffset = 0. * cm;
   G4double copyNo = 0;

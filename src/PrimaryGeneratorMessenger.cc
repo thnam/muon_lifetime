@@ -39,8 +39,8 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(
-  PrimaryGeneratorAction *Gun)
-  : Action(Gun) {
+    PrimaryGeneratorAction *Gun)
+    : Action(Gun) {
   CRYDir = new G4UIdirectory("/CRY/");
   CRYDir->SetGuidance("CRY initialization");
 

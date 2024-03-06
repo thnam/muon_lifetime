@@ -14,7 +14,7 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(const char *inputfile)
-  : G4VUserPrimaryGeneratorAction(), fParticleGun(0), fEnvelopeBox(0) {
+    : G4VUserPrimaryGeneratorAction(), fParticleGun(0), fEnvelopeBox(0) {
   // define a particle gun
   fParticleGun = new G4ParticleGun();
 
@@ -28,8 +28,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction(const char *inputfile)
       G4cout << "PrimaryGeneratorAction: Failed to open CRY input file= "
              << inputfile << G4endl;
     InputState = -1;
-  } 
-  else {
+  } else {
     std::string setupString("");
     while (!inputFile.getline(buffer, 1000).eof()) {
       setupString.append(buffer);
@@ -66,12 +65,13 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   if (!fEnvelopeBox) {
     G4LogicalVolume *envLV =
         G4LogicalVolumeStore::GetInstance()->GetVolume("World");
-    if (envLV) fEnvelopeBox = dynamic_cast<G4Box *>(envLV->GetSolid());
+    if (envLV)
+      fEnvelopeBox = dynamic_cast<G4Box *>(envLV->GetSolid());
   }
 
   if (InputState != 0) {
     G4String *str =
-      new G4String("CRY library was not successfully initialized");
+        new G4String("CRY library was not successfully initialized");
     // G4Exception(*str);
     G4Exception("PrimaryGeneratorAction", "1", RunMustBeAborted, *str);
   }
@@ -81,34 +81,34 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   //....debug output
   // G4cout << "\nEvent=" << anEvent->GetEventID() << " "
-         // << "CRY generated nparticles=" << vect->size() << G4endl;
+  // << "CRY generated nparticles=" << vect->size() << G4endl;
 
   for (unsigned j = 0; j < vect->size(); j++) {
     particleName = CRYUtils::partName((*vect)[j]->id());
 
     //....debug output
     // G4cout << "  " << particleName << " "
-           // << "charge=" << (*vect)[j]->charge() << " "
-           // << "energy (MeV)=" << (*vect)[j]->ke() * MeV << " "
-           // << "pos (m)"
-           // << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
-           // << " "
-           // << "direction cosines "
-           // << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w())
-           // << " " << G4endl;
+    // << "charge=" << (*vect)[j]->charge() << " "
+    // << "energy (MeV)=" << (*vect)[j]->ke() * MeV << " "
+    // << "pos (m)"
+    // << G4ThreeVector((*vect)[j]->x(), (*vect)[j]->y(), (*vect)[j]->z())
+    // << " "
+    // << "direction cosines "
+    // << G4ThreeVector((*vect)[j]->u(), (*vect)[j]->v(), (*vect)[j]->w())
+    // << " " << G4endl;
 
     fParticleGun->SetParticleDefinition(
-      particleTable->FindParticle((*vect)[j]->PDGid()));
+        particleTable->FindParticle((*vect)[j]->PDGid()));
     fParticleGun->SetParticleEnergy((*vect)[j]->ke() * MeV);
 
-    // Need to rotate the particle direction since in CRY z is up and 
+    // Need to rotate the particle direction since in CRY z is up and
     // in this simulation y is up
-    fParticleGun->SetParticlePosition(G4ThreeVector(
-      (*vect)[j]->y() * m,
-      (*vect)[j]->z() * m + fEnvelopeBox->GetYHalfLength(),
-      (*vect)[j]->x() * m));
+    fParticleGun->SetParticlePosition(
+        G4ThreeVector((*vect)[j]->y() * m,
+                      (*vect)[j]->z() * m + fEnvelopeBox->GetYHalfLength(),
+                      (*vect)[j]->x() * m));
     fParticleGun->SetParticleMomentumDirection(
-      G4ThreeVector((*vect)[j]->v(), (*vect)[j]->w(), (*vect)[j]->u()));
+        G4ThreeVector((*vect)[j]->v(), (*vect)[j]->w(), (*vect)[j]->u()));
 
     fParticleGun->SetParticleTime((*vect)[j]->t());
     fParticleGun->GeneratePrimaryVertex(anEvent);
@@ -122,7 +122,7 @@ void PrimaryGeneratorAction::InputCRY() { InputState = 1; }
 
 void PrimaryGeneratorAction::UpdateCRY(std::string *MessInput) {
   CRYSetup *setup =
-    new CRYSetup(*MessInput, "./CRY-1.7-prefix/src/CRY-1.7/data");
+      new CRYSetup(*MessInput, "./CRY-1.7-prefix/src/CRY-1.7/data");
 
   gen = new CRYGenerator(setup);
 

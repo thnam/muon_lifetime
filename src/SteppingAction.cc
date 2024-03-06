@@ -12,7 +12,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SteppingAction::SteppingAction(EventAction *eventAction) : G4UserSteppingAction(), fEventAction(eventAction) {
+SteppingAction::SteppingAction(EventAction *eventAction)
+    : G4UserSteppingAction(), fEventAction(eventAction) {
 
   // const G4StepPoint* endPoint = step->GetPostStepPoint() ;
   // const G4VProcess* process = endPoint->GetProcessDefinedStep() ;
